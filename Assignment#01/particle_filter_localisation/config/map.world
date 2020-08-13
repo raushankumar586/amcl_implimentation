@@ -1,0 +1,94 @@
+interval_sim 100
+resolution 0.01
+
+window
+(
+  size [ 800 600 ]
+
+  center [ 0 0 ]
+  rotate [ 0 0 ]
+  scale 100.0
+
+  show_data 1
+  show_clock 0
+)
+
+define floorplan model
+(
+  color "black"
+  boundary 1
+  gui_nose 0
+  gui_grid 0
+  gui_outline 0
+  gui_move 0
+  ranger_return 1
+)
+
+floorplan
+(
+  name "map"
+  bitmap "map.png"
+  size [ 6.44 3.33 0.50 ]
+  pose [ 0 0 0 0 ]
+)
+
+define laser_scanner ranger
+(
+	sensor
+	(
+    range [ 0.0  25.0 ]
+    noise [ 0.001 0.01 2 ]
+    fov 220.0
+    samples 440
+  )
+  
+  block
+  (
+    points 8
+    point[0] [ 0.0 0.1 ]
+    point[1] [ 0.0 0.9 ]
+    point[2] [ 0.1 1.0 ]
+    point[3] [ 0.9 1.0 ]
+    point[4] [ 1.0 0.9 ]
+    point[5] [ 1.0 0.1 ]
+    point[6] [ 0.9 0.0 ]
+    point[7] [ 0.1 0.0 ]
+    z [ 0.0 1.0 ]
+  )
+)
+
+define robot position
+(
+  size [ 0.3 0.3 0.1 ]
+  drive "diff"
+  localization "odom"
+  odom_error [ 0.03 0.03 0.00 0.05 ]
+  velocity_bounds [-0.5 0.5 -0.5 0.5 0.0 0.0 -45 45 ]
+  
+  block
+  (
+    points 6
+    point[0] [ 0.0 0.0 ]
+    point[1] [ 0.0 1.0 ]
+    point[2] [ 0.8 1.0 ]
+    point[3] [ 1.0 0.8 ]
+    point[4] [ 1.0 0.2 ]
+    point[5] [ 0.8 0.0 ]
+    z [ 0.0 1.0 ]
+  )
+  
+  laser_scanner
+  (
+    name "laser_scanner"
+    size [ 0.05 0.05 0.025 ]
+    color "red"
+  )
+)
+
+robot
+(
+  name "robot"
+  pose [ -2.1 0.2 0 -28 ]
+  color "gray"
+)
+
