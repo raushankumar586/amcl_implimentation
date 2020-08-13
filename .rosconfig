@@ -1,0 +1,5 @@
+export ROS_IP=`ip a show wlp3s0| grep "scope global" | grep -Po '(?<=inet )[\d.]+'` 
+export ROS_MASTER_URL="http://"$ROS_IP":11311"
+source /home/taha/learning_ws/devel/setup.bash 
+#source /home/taha/catkin_ws/devel/setup.bash 
+
