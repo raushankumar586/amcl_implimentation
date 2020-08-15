@@ -19,9 +19,10 @@
 
 namespace
 {
-double wrapAngle(double angle)
+double wrapAngle(double angle)  // taharead: double
 {
   // Function to wrap an angle between 0 and 2*Pi
+  //  -20 : 340 , 390 : 30
   while (angle < 0.)
   {
     angle += 2 * M_PI;
@@ -36,9 +37,10 @@ double wrapAngle(double angle)
 }
 }  // namespace
 
-namespace particle_filter_localisation
+namespace particle_filter_localisation  // taharead : name
 {
 // The particle structure
+// taharead  : Structure in c++
 struct Particle
 {
   double x = 0.;      // X axis position in metres
@@ -46,6 +48,7 @@ struct Particle
   double theta = 0.;  // Angle in radians
   double weight = 0.;
 };
+
 
 // The particle filter class
 class ParticleFilter
@@ -78,6 +81,7 @@ private:
   std::uniform_real_distribution<double> random_uniform_0_1_{ 0., 1. };  // Uniform distribution between 0 and 1
   std::normal_distribution<double> random_normal_0_1_{ 0., 1. };  // Normal distribution 0 mean 1 standard deviation
 
+// taharead : vector in c++
   std::vector<Particle> particles_{};  // Vector that holds the particles
 
   nav_msgs::Odometry prev_odom_msg_{};  // Stores the previous odometry message to determine distance and rotation
@@ -155,17 +159,18 @@ ParticleFilter::ParticleFilter(ros::NodeHandle& nh)
   {
     map_ = get_map.response.map;
     ROS_INFO("Map received");
+
+
   }
 
   // Convert occupancy grid into an image to use OpenCV's line iterator
   map_image_ = cv::Mat(map_.info.height, map_.info.width, CV_8SC1, &map_.data[0]);
 
   // Map geometry for particle filter
-  map_x_min_ = map_.info.origin.position.x;
-  map_x_max_ = map_.info.width * map_.info.resolution + map_.info.origin.position.x;
-
-  map_y_min_ = map_.info.origin.position.y;
-  map_y_max_ = map_.info.height * map_.info.resolution + map_.info.origin.position.y;
+  map_x_min_ = double(map_.info.origin.position.x);
+  map_x_max_ = double(map_.info.width * map_.info.resolution + map_.info.origin.position.x);
+  map_y_min_ = double(map_.info.origin.position.y);
+  map_y_max_ = double(map_.info.height * map_.info.resolution + map_.info.origin.position.y);
 
   // Initialise particles
   initialiseParticles();
@@ -254,7 +259,20 @@ void ParticleFilter::initialiseParticles()
   // "map_x_min_", "map_x_max_", "map_y_min_", and "map_y_max_" give you the limits of the map
   // Orientation (theta) should be 0 and 2*Pi
   // You probably need to use a "." in your numbers (e.g. "1.0") when calculating the weights
+  //taharead %d and %f , %s use in c++ , check also for double
+  ROS_INFO("initialiseParticles starts here: ");
+  //taharead %d use in c++
+  ROS_INFO("map_x_min_ : %f, map_x_max_ : %f, dist : %f", map_x_min_, map_x_max_, map_x_max_-map_x_min_);
+  ROS_INFO("map_y_min_ : %f, map_y_max_ : %f, dist : %f", map_y_min_, map_y_max_, map_y_max_-map_y_min_);
+  Particle particle_;
 
+  for (int i = 0; i < num_particles_; i++)
+  {
+    particle_.x = randomUniform(map_x_min_, map_x_max_);
+    particle_.y = randomUniform(map_y_min_, map_y_max_);
+    particle_.theta = randomUniform(0, 360);
+  }
+  ROS_INFO("x : %f, y: %f, theta: %f ", particle_.x, particle_.y, particle_.theta);
 
   // YOUR CODE HERE //
 
@@ -470,7 +488,7 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   // You will probably need "std::cos()" and "std::sin()", and you should wrap theta with "wrapAngle()" too
 
 
-  // YOUR CODE HERE
+  // YOUR CODE ``
 
 
   // Overwrite the previous odometry message
