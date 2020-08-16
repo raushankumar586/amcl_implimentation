@@ -285,17 +285,36 @@ void ParticleFilter::initialiseParticles()
   // TODO inflate the occupancy grid and check that particles are not in occupied space
 
   // Don't use the estimated the pose just after initialisation
+  //seethat
   estimated_pose_valid_ = false;
 
   // Induce a sensing update
+  //seethat
   motion_update_count_ = num_motion_updates_;
 }
 
 void ParticleFilter::normaliseWeights()
 {
   // Normalise the weights of the particles in "particles_"
+  double sum_of_weight = 0;
   // calculating total weight of all the particles
+  for (auto &each_particle : particles_)
+  {
+    sum_of_weight = sum_of_weight + each_particle.weight;
+  }
+  //now i have sum of weights
+  ROS_INFO("sum_of_weight: %f ", sum_of_weight);
 
+  // normallizing particles
+  for (auto &each_particle : particles_)
+  {
+    each_particle.weight = each_particle.weight/sum_of_weight;
+  }
+
+  for (auto &each_particle : particles_)
+  {
+    ROS_INFO("each_particle.weight: %f ", each_particle.weight);
+  }
 
   // YOUR CODE HERE //
 
