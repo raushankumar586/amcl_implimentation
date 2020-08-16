@@ -295,7 +295,6 @@ void ParticleFilter::initialiseParticles()
 
 void ParticleFilter::normaliseWeights()
 {
-  // Normalise the weights of the particles in "particles_"
   double sum_of_weight = 0;
   // calculating total weight of all the particles
   for (auto &each_particle : particles_)
@@ -470,12 +469,15 @@ void ParticleFilter::publishEstimatedPose(const ros::TimerEvent&)
 void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
 {
   // Distance moved since the previous odometry message
+  //taharead1 odom message type in ros
+
   double global_delta_x = odom_msg.pose.pose.position.x - prev_odom_msg_.pose.pose.position.x;
   double global_delta_y = odom_msg.pose.pose.position.y - prev_odom_msg_.pose.pose.position.y;
 
   double distance = std::sqrt(std::pow(global_delta_x, 2.) + std::pow(global_delta_y, 2.));
 
   // Previous robot orientation
+  //taharead1 quaternions 
   double prev_theta = 2. * std::acos(prev_odom_msg_.pose.pose.orientation.w);
 
   if (prev_odom_msg_.pose.pose.orientation.z < 0.)
@@ -484,6 +486,7 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   }
 
   // Figure out if the direction is backward
+  //taharead_again  : deadreckoning , how calculate negative distance that robot is going backward 
   if ((prev_theta < 0. && global_delta_y > 0.) || (prev_theta > 0. && global_delta_y < 0.))
   {
     distance *= -1.;
@@ -510,7 +513,18 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   // You also need to add noise, which should be different for each particle
   // Use "randomNormal()" with "motion_distance_noise_stddev_" and "motion_rotation_noise_stddev_" to get random values
   // You will probably need "std::cos()" and "std::sin()", and you should wrap theta with "wrapAngle()" too
+  for (auto &each_particle : particles_)
+  {
+    each_particle.x = each_particle.x +  (distance + randomNormal(motion_distance_noise_stddev_)) * std::cos(theta);
+    each_particle.y = each_particle.y +  (distance + randomNormal(motion_distance_noise_stddev_)) * std::sin(theta);
+    each_particle.theta = each_particle.theta + rotation + randomNormal(motion_rotation_noise_stddev_);
+  }
 
+
+
+
+
+  
 
   // YOUR CODE ``
 
