@@ -271,8 +271,12 @@ void ParticleFilter::initialiseParticles()
     particle_.x = randomUniform(map_x_min_, map_x_max_);
     particle_.y = randomUniform(map_y_min_, map_y_max_);
     particle_.theta = randomUniform(0, 360);
+    particle_.weight = 1.0; // keeping the weight 1 for each particle now. 
+    particles_.push_back(particle_);
+    // ROS_INFO("particle_.weight: %f ", particle_.weight);
   }
   ROS_INFO("x : %f, y: %f, theta: %f ", particle_.x, particle_.y, particle_.theta);
+
 
   // YOUR CODE HERE //
 
@@ -290,6 +294,7 @@ void ParticleFilter::initialiseParticles()
 void ParticleFilter::normaliseWeights()
 {
   // Normalise the weights of the particles in "particles_"
+  // calculating total weight of all the particles
 
 
   // YOUR CODE HERE //
