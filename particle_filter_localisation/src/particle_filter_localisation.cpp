@@ -332,6 +332,13 @@ void ParticleFilter::estimatePose()
 
   // YOUR CODE HERE //
 
+  //calculating weighted ad0 
+  for (auto &each_particle : particles_)
+  {
+    estimated_pose_x = estimated_pose_x +each_particle.x * each_particle.weight;
+    estimated_pose_y = estimated_pose_y +each_particle.y * each_particle.weight;
+    estimated_pose_theta = estimated_pose_theta +each_particle.theta * each_particle.weight;
+  }
 
   // Set the estimated pose message
   estimated_pose_.position.x = estimated_pose_x;
