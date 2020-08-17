@@ -129,6 +129,7 @@ private:
   void publishEstimatedPose(const ros::TimerEvent&);
 
   void odomCallback(const nav_msgs::Odometry& odom_msg);      // Odometry message callback
+  // taharead2 LaserScan ros message type  
   void scanCallback(const sensor_msgs::LaserScan& scan_msg);  // Laser scan message callback
 };
 
@@ -302,7 +303,7 @@ void ParticleFilter::normaliseWeights()
     sum_of_weight = sum_of_weight + each_particle.weight;
   }
   //now i have sum of weights
-  ROS_INFO("sum_of_weight: %f ", sum_of_weight);
+  // ROS_INFO("sum_of_weight: %f ", sum_of_weight);
 
   // normallizing particles
   for (auto &each_particle : particles_)
@@ -310,10 +311,10 @@ void ParticleFilter::normaliseWeights()
     each_particle.weight = each_particle.weight/sum_of_weight;
   }
 
-  for (auto &each_particle : particles_)
-  {
-    ROS_INFO("each_particle.weight: %f ", each_particle.weight);
-  }
+  // for (auto &each_particle : particles_)
+  // {
+  //   ROS_INFO("each_particle.weight: %f ", each_particle.weight);
+  // }
 
   // YOUR CODE HERE //
 
@@ -528,11 +529,6 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   }
 
 
-
-
-
-  
-
   // YOUR CODE ``
 
 
@@ -630,7 +626,7 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
   }
 }
 
-}  // namespace particle_filter_localisation
+}  // namespace particle_filter_localZisation
 
 int main(int argc, char** argv)
 {
