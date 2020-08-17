@@ -598,10 +598,8 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
       // Multiply the ray likelihood into the "likelihood" variable
       // You will probably need "std::sqrt()", "std::pow()", and "std::exp()"
 
-
+      likelihood = (1/ std::sqrt(2*M_PI*std::pow(sensing_noise_stddev_,2))) * std::exp(-1* std::pow((particle_range - scan_range),2) /(2* std::pow(sensing_noise_stddev_,2)));
       // YOUR CODE HERE
-
-
     }
 
     // Update the particle weight with the likelihood
