@@ -13,9 +13,9 @@
           args="$(find particle_filter_localisation)/config/map.yaml"/>
 
     <!-- RViz 
+-->
     <node pkg="rviz" type="rviz" name="rviz" required="true"
           args="-d $(find particle_filter_localisation)/config/visualisation.rviz"/>
--->
     <!-- Particle filter localisation -->
     <node pkg="particle_filter_localisation" type="particle_filter_localisation" name="particle_filter_localisation"
           output="screen">
