@@ -253,7 +253,7 @@ void ParticleFilter::initialiseParticles()
 {
   // "num_particles_" is the number of particles you will create
   particles_.clear();
-  particles_.resize(num_particles_);
+  particles_.resize(p);
 
   // You want to initialise the particles in the "particles_" vector
   // "randomUniform(a, b)" wiill give you a random value with uniform distribution between "a" and "b"
@@ -267,7 +267,7 @@ void ParticleFilter::initialiseParticles()
   ROS_INFO("map_y_min_ : %f, map_y_max_ : %f, dist : %f", map_y_min_, map_y_max_, map_y_max_-map_y_min_);
   Particle particle_;
 
-  for (int i = 0; i < num_particles_; i++)
+  for (auto i = 0; i < num_particles_; i++)
   {
     particle_.x = randomUniform(map_x_min_, map_x_max_);
     particle_.y = randomUniform(map_y_min_, map_y_max_);
