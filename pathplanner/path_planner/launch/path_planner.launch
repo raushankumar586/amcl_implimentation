@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="path_planner" type="path_planner" name="path_planner" output="screen">
+    <!-- fixed parameter -->
+
+    <param name="lambda" type="double" value="1.0"/>
+
+    <!-- map size and resolution -->
+    <param name="map_width" type="double" value="6.44"/>
+    <param name="map_height" type="double" value="3.33"/> 
+    <param name="map_resolution" type="double" value="0.01"/>
+
+    <!-- tunable parameter -->
+    <!-- grid resolution -->
+    <param name="grid_resolution" type="double" value="0.1"/>
+
+
+    <!-- start position and goal position -->
+    <param name="startx" type="double" value="-1.00"/>
+    <param name="starty" type="double" value="1.50"/>
+    <param name="goalx" type="double" value="2.50"/>
+    <param name="goaly" type="double" value="1.50"/>
+
+
+<!--
+    <param name="map_width" type="double" value="2"/>
+    <param name="map_height" type="double" value="1"/>
+    <param name="map_resolution" type="double" value="0.1"/>
+
+    <param name="grid_resolution" type="double" value="0.1"/>
+
+    <param name="startx" type="double" value="-0.30"/>
+    <param name="starty" type="double" value="0.40"/>
+    <param name="goalx" type="double" value="0.70"/>
+    <param name="goaly" type="double" value="-0.10"/>
+-->
+  </node>
+
+  <node pkg="map_server" type="map_server" name="map_server" required="true" args="$(find path_planner)/config/map.yaml" />
+  <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find path_planner)/launch/planner_conf.rviz" />
+
+</launch>
