@@ -20,14 +20,14 @@
     <node pkg="particle_filter_localisation" type="particle_filter_localisation" name="particle_filter_localisation"
           output="screen">
 
-        <!-- <param name="num_particles" type="int" value="1000"/> -->
-        <!-- <param name="num_motion_updates" type="int" value="10"/> -->
-        <!-- <param name="num_scan_rays" type="int" value="6"/> -->
-        <!-- <param name="num_sensing_updates" type="int" value="5"/> -->
+         <param name="num_particles" type="int" value="1000"/> 
+         <param name="num_motion_updates" type="int" value="1"/> 
+         <param name="num_scan_rays" type="int" value="6"/> -->
+         <param name="num_sensing_updates" type="int" value="1"/>
 
-        <!-- <param name="motion_distance_noise_stddev" type="double" value="0.01"/> -->
-        <!-- <param name="motion_rotation_noise_stddev" type="double" value="0.052360"/> -->
-        <!-- <param name="sensing_noise_stddev" type="double" value="0.5"/> -->
+         <param name="motion_distance_noise_stddev" type="double" value="0.01"/> 
+         <param name="motion_rotation_noise_stddev" type="double" value="0.052360"/> 
+         <param name="sensing_noise_stddev" type="double" value="0.5"/> 
 
     </node>
 

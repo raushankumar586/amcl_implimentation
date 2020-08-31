@@ -19,7 +19,7 @@
 
 namespace
 {
-double wrapAngle(double angle)  // taharead: double
+double wrapAngle(double angle)
 {
   // Function to wrap an angle between 0 and 2*Pi
   //  -20 : 340 , 390 : 30
@@ -37,10 +37,9 @@ double wrapAngle(double angle)  // taharead: double
 }
 }  // namespace
 
-namespace particle_filter_localisation  // taharead : name
+namespace particle_filter_localisation
 {
 // The particle structure
-// taharead  : Structure in c++
 struct Particle
 {
   double x = 0.;      // X axis position in metres
@@ -48,7 +47,6 @@ struct Particle
   double theta = 0.;  // Angle in radians
   double weight = 0.;
 };
-
 
 // The particle filter class
 class ParticleFilter
@@ -81,7 +79,6 @@ private:
   std::uniform_real_distribution<double> random_uniform_0_1_{ 0., 1. };  // Uniform distribution between 0 and 1
   std::normal_distribution<double> random_normal_0_1_{ 0., 1. };  // Normal distribution 0 mean 1 standard deviation
 
-// taharead : vector in c++
   std::vector<Particle> particles_{};  // Vector that holds the particles
 
   nav_msgs::Odometry prev_odom_msg_{};  // Stores the previous odometry message to determine distance and rotation
@@ -129,7 +126,6 @@ private:
   void publishEstimatedPose(const ros::TimerEvent&);
 
   void odomCallback(const nav_msgs::Odometry& odom_msg);      // Odometry message callback
-  // taharead2 LaserScan ros message type  
   void scanCallback(const sensor_msgs::LaserScan& scan_msg);  // Laser scan message callback
 };
 
@@ -160,8 +156,6 @@ ParticleFilter::ParticleFilter(ros::NodeHandle& nh)
   {
     map_ = get_map.response.map;
     ROS_INFO("Map received");
-
-
   }
 
   // Convert occupancy grid into an image to use OpenCV's line iterator
@@ -170,6 +164,7 @@ ParticleFilter::ParticleFilter(ros::NodeHandle& nh)
   // Map geometry for particle filter
   map_x_min_ = double(map_.info.origin.position.x);
   map_x_max_ = double(map_.info.width * map_.info.resolution + map_.info.origin.position.x);
+
   map_y_min_ = double(map_.info.origin.position.y);
   map_y_max_ = double(map_.info.height * map_.info.resolution + map_.info.origin.position.y);
 
@@ -253,21 +248,21 @@ void ParticleFilter::initialiseParticles()
 {
   // "num_particles_" is the number of particles you will create
   particles_.clear();
-  particles_.resize(p);
+  particles_.resize(num_particles_);
 
   // You want to initialise the particles in the "particles_" vector
   // "randomUniform(a, b)" wiill give you a random value with uniform distribution between "a" and "b"
   // "map_x_min_", "map_x_max_", "map_y_min_", and "map_y_max_" give you the limits of the map
   // Orientation (theta) should be 0 and 2*Pi
   // You probably need to use a "." in your numbers (e.g. "1.0") when calculating the weights
-  //taharead %d and %f , %s use in c++ , check also for double
-  ROS_INFO("initialiseParticles starts here: ");
-  //taharead %d use in c++
-  ROS_INFO("map_x_min_ : %f, map_x_max_ : %f, dist : %f", map_x_min_, map_x_max_, map_x_max_-map_x_min_);
-  ROS_INFO("map_y_min_ : %f, map_y_max_ : %f, dist : %f", map_y_min_, map_y_max_, map_y_max_-map_y_min_);
+
+
+//   // YOUR CODE HERE //
+  double Pi = 4 * std::cos(0.0);
+  double N = particles_.size();
   Particle particle_;
 
-  for (auto i = 0; i < num_particles_; i++)
+  for (int i = 0; i < N; i++)
   {
     particle_.x = randomUniform(map_x_min_, map_x_max_);
     particle_.y = randomUniform(map_y_min_, map_y_max_);
@@ -276,27 +271,24 @@ void ParticleFilter::initialiseParticles()
     particles_.push_back(particle_);
     // ROS_INFO("particle_.weight: %f ", particle_.weight);
   }
-  ROS_INFO("x : %f, y: %f, theta: %f ", particle_.x, particle_.y, particle_.theta);
+
+//   // Particles may be initialised in occupied space but the map has thin walls so it should be OK
+//   // TODO inflate the occupancy grid and check that particles are not in occupied space
+
+//   // Don't use the estimated the pose just after initialisation
+//   estimated_pose_valid_ = false;
+
+//   // Induce a sensing update
+//   motion_update_count_ = num_motion_updates_;
+ }
+
+ void ParticleFilter::normaliseWeights()
+ {
+   // Normalise the weights of the particles in "particles_"
 
 
-  // YOUR CODE HERE //
-
-
-  // Particles may be initialised in occupied space but the map has thin walls so it should be OK
-  // TODO inflate the occupancy grid and check that particles are not in occupied space
-
-  // Don't use the estimated the pose just after initialisation
-  //seethat
-  estimated_pose_valid_ = false;
-
-  // Induce a sensing update
-  //seethat
-  motion_update_count_ = num_motion_updates_;
-}
-
-void ParticleFilter::normaliseWeights()
-{
-  double sum_of_weight = 0;
+//   // YOUR CODE HERE //
+   double sum_of_weight = 0.0;
   // calculating total weight of all the particles
   for (auto &each_particle : particles_)
   {
@@ -311,13 +303,10 @@ void ParticleFilter::normaliseWeights()
     each_particle.weight = each_particle.weight/sum_of_weight;
   }
 
-  // for (auto &each_particle : particles_)
-  // {
-  //   ROS_INFO("each_particle.weight: %f ", each_particle.weight);
-  // }
-
-  // YOUR CODE HERE //
-
+  for (auto &each_particle : particles_)
+  {
+    ROS_INFO("each_particle.weight: %f ", each_particle.weight);
+  }
 
 }
 
@@ -330,16 +319,39 @@ void ParticleFilter::estimatePose()
   // Put the values into "estimated_pose_x", "estimated_pose_y", and "estimated_pose_theta"
   // If you just use the pose of the particle with the highest weight the maximum mark you can get for this part is 0.5
 
-
   // YOUR CODE HERE //
+  int N = particles_.size();
 
-  //calculating weighted ad0 
-  for (auto &each_particle : particles_)
+  double x_sum = 0.0;
+
+  double y_sum = 0.0;
+
+  double weight_sum = 0.0;
+
+  double theta_sin_sum = 0.0;
+
+  double theta_cos_sum = 0.0;
+
+  for(int i = 1; i < N ; i++)
   {
-    estimated_pose_x = estimated_pose_x +each_particle.x * each_particle.weight;
-    estimated_pose_y = estimated_pose_y +each_particle.y * each_particle.weight;
-    estimated_pose_theta = estimated_pose_theta +each_particle.theta * each_particle.weight;
+
+    x_sum = x_sum + (particles_[i].x * particles_[i].weight);
+
+    y_sum = y_sum + (particles_[i].y * particles_[i].weight);
+
+    weight_sum = weight_sum + (particles_[i].weight);
+
+    theta_sin_sum = theta_sin_sum + (std::sin(particles_[i].theta) * particles_[i].weight);
+
+    theta_cos_sum = theta_cos_sum + (std::cos(particles_[i].theta) * particles_[i].weight);
+
   }
+
+  estimated_pose_x = x_sum / weight_sum;
+
+  estimated_pose_y = y_sum / weight_sum;
+
+  estimated_pose_theta = std::atan2((theta_sin_sum / N) , (theta_cos_sum / N));
 
   // Set the estimated pose message
   estimated_pose_.position.x = estimated_pose_x;
@@ -377,9 +389,6 @@ void ParticleFilter::resampleParticles()
       {
         // Add the particle to the "particles_" vector
         particles_.push_back(*old_particles_it);
-
-        // Note !!! newly added line
-        particles_.back().weight = 1./num_particles_;
 
         // Add jitter to the particle
         particles_.back().x += randomNormal(0.02);
@@ -477,15 +486,12 @@ void ParticleFilter::publishEstimatedPose(const ros::TimerEvent&)
 void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
 {
   // Distance moved since the previous odometry message
-  //taharead1 odom message type in ros
-
   double global_delta_x = odom_msg.pose.pose.position.x - prev_odom_msg_.pose.pose.position.x;
   double global_delta_y = odom_msg.pose.pose.position.y - prev_odom_msg_.pose.pose.position.y;
 
   double distance = std::sqrt(std::pow(global_delta_x, 2.) + std::pow(global_delta_y, 2.));
 
   // Previous robot orientation
-  //taharead1 quaternions 
   double prev_theta = 2. * std::acos(prev_odom_msg_.pose.pose.orientation.w);
 
   if (prev_odom_msg_.pose.pose.orientation.z < 0.)
@@ -494,7 +500,6 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   }
 
   // Figure out if the direction is backward
-  //taharead_again  : deadreckoning , how calculate negative distance that robot is going backward 
   if ((prev_theta < 0. && global_delta_y > 0.) || (prev_theta > 0. && global_delta_y < 0.))
   {
     distance *= -1.;
@@ -517,19 +522,28 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
     return;
   }
 
-  // Motion update: add "distance" and "rotation" to each particle
-  // You also need to add noise, which should be different for each particle
-  // Use "randomNormal()" with "motion_distance_noise_stddev_" and "motion_rotation_noise_stddev_" to get random values
-  // You will probably need "std::cos()" and "std::sin()", and you should wrap theta with "wrapAngle()" too
-  for (auto &each_particle : particles_)
-  {
-    each_particle.x = each_particle.x +  (distance + randomNormal(motion_distance_noise_stddev_)) * std::cos(theta);
-    each_particle.y = each_particle.y +  (distance + randomNormal(motion_distance_noise_stddev_)) * std::sin(theta);
-    each_particle.theta = each_particle.theta + rotation + randomNormal(motion_rotation_noise_stddev_);
-  }
+  //Motion update: add "distance" and "rotation" to each particle
+  //You also need to add noise, which should be different for each particle
+  //Use "randomNormal()" with "motion_distance_noise_stddev_" and "motion_rotation_noise_stddev_" to get random values
+  //You will probably need "std::cos()" and "std::sin()", and you should wrap theta with "wrapAngle()" too
 
 
-  // YOUR CODE ``
+//   // YOUR CODE HERE
+  int N = particles_.size();
+
+  double omega_d = motion_distance_noise_stddev_;
+  double omega_r = motion_rotation_noise_stddev_;
+
+   for (int i = 0; i < N; i++)
+   {
+
+     particles_[i].x =  particles_[i].x + (distance + randomNormal(omega_d)) * std::cos(particles_[i].theta);
+
+     particles_[i].y = particles_[i].y + (distance + randomNormal(omega_d)) * std::sin(particles_[i].theta);
+
+     particles_[i].theta = wrapAngle(particles_[i].theta + rotation + randomNormal(omega_r));
+
+   }
 
 
   // Overwrite the previous odometry message
@@ -564,6 +578,7 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   // Increment the motion update counter
   ++motion_update_count_;
 }
+
 
 void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
 {
@@ -601,9 +616,20 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
       // Multiply the ray likelihood into the "likelihood" variable
       // You will probably need "std::sqrt()", "std::pow()", and "std::exp()"
 
-      likelihood = (1/ std::sqrt(2*M_PI*std::pow(sensing_noise_stddev_,2))) * std::exp(-1* std::pow((particle_range - scan_range),2) /(2* std::pow(sensing_noise_stddev_,2)));
-      // YOUR CODE HERE
+
+//       // YOUR CODE HERE
+
+      double Pi = 2 * 3.14159265359;
+
+      double likelihood_k = 0.0;
+
+      likelihood_k = (1 / (std::sqrt(Pi * std::pow(sensing_noise_stddev_, 2.0)))) * std::exp(- std::pow(particle_range - scan_range, 2.0) / (2 * std::pow(sensing_noise_stddev_, 2)));
+
+      likelihood =  likelihood * likelihood_k;
+
     }
+
+
 
     // Update the particle weight with the likelihood
     p.weight *= likelihood;
@@ -626,7 +652,7 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
   }
 }
 
-}  // namespace particle_filter_localZisation
+}  // namespace particle_filter_localisation
 
 int main(int argc, char** argv)
 {
@@ -640,4 +666,3 @@ int main(int argc, char** argv)
 
   return 0;
 }
-
