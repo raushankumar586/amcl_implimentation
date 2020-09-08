@@ -29,6 +29,11 @@ struct Waypoint{
   double y;
 };
 
+struct compare_cost{
+
+  bool operator()(Node& p1, Node& p2);
+};
+
 class ASTAR{
 public:
   // constructor
@@ -85,6 +90,8 @@ private:
   int meterY2grid(double y);
 
   vector<Node> descending_sort( vector<Node> nodelist );
+  vector<Node> closed_list;
+  std::priority_queue<Node, vector<Node>, compare_cost> open_list;
 
   int contains( const vector<Node>& nodelist, const Node& q_node );
 

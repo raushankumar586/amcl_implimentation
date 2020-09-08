@@ -190,16 +190,9 @@ void ASTAR::init_heuristic(Node goal_node) {
 
   // YOUR CODE GOES HERE
 
-
-
-
-
-
-
-
-
-
-
+  int x = meterX2grid(start_[0]);
+  int y = meterY2grid(start_[1]);
+  gridmap_[y][x].heuristic = goal_node.x + goal_node.y;  // manhatan distance 
 }
 
 // generate policy
@@ -291,6 +284,15 @@ void ASTAR::smooth_path(double weight_data, double weight_smooth) {
 
 }
 
+bool ASTAR::compareCoordinates(const Node& p1, const Node& p2) {
+  return p1.x_ == p2.x_ && p1.y_ == p2.y_;
+}
+
+bool ASTAR::expand(const Node& p1, const Node& p2) {
+  return p1.x_ == p2.x_ && p1.y_ == p2.y_;
+}
+
+
 // search for astar path planning
 bool ASTAR::path_search() {
   setup_gridmap();
@@ -317,12 +319,48 @@ bool ASTAR::path_search() {
     return false;
   }
 
+
+
   init_heuristic(goal_node);
 
   gridmap_[start_node.y][start_node.x].closed = 1;
   gridmap_[start_node.y][start_node.x].expand = 0;
 
+
   // create open list
+  open_list.push(start_node);
+
+  while (!open_list.empty()) {
+    Node curr_node = open_list.top();
+    open_list.pop();
+    if (curr_node.x == goal_node.x_&& curr_node.y == goal_node.y)) {
+      closed_list.push_back(curr_node);
+      //reached
+      return closed_list;
+    }
+
+    for (int i= 0 ; i < 4 ; i++) {
+      Node new_point;
+      new_point.x =  curr_node.x + 1
+      new_point.y =  curr_node.x - 1
+      new_point.x =  curr_node.x - 1
+      new_point.y =  curr_node.x + 1
+
+      new_point.heuristic=  std::abs(new_point.x_ - goal_node.x_) + std::abs(new_point.y - goal_node.y_);
+      if (compareCoordinates(new_point, goal_node)) {
+        open_list.push(new_point);
+        break;
+      }
+
+      if (gridmap_[new_point.x][new_point.y] != 0) {
+        continue;  // obstacle or visited
+      }
+      open_list.push(new_point);
+    }
+    closed_list.push_back(curr_node);
+  }
+  closed_list.clear();
+
   // YOUR CODE GOES HERE
 
 
